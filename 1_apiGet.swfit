@@ -109,5 +109,3 @@ func weatherForecast() {
         }
         task.resume()
 }
-task.resume()
-}
