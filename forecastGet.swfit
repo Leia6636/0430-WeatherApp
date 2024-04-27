@@ -1,0 +1,93 @@
+func forecastGet() {
+        print("forecastGet")
+
+        let Authorization = "你的金鑰"
+        var locationName = "\(location)"
+
+        guard let url = URL(string: "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=\(Authorization)&locationName=\(locationName)") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        let task = URLSession.shared.dataTask(with: request) { [self] data, response, error in
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                print("Error with the response, unexpected status code: \(response)")
+                return
+            }
+
+            if let data = data {
+                do {
+                    if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+
+                        //資料處理
+                        let success = json["success"] as? String
+
+                        if let result = json["result"] as? [String: Any] {
+                            if let fields = result["fields"] as? [[String: Any]] {
+                            }
+                        }
+
+                        if let records = json["records"] as? [String: Any] {
+                            if let datasetDescription = records["datasetDescription"] as? String {
+                                print("Dataset Description: \(datasetDescription)")
+                            }
+
+                            if let location = records["location"] as? [[String: Any]] {
+                                for loc in location {
+                                    if let locationName = loc["locationName"] as? String {
+                                        print("Location: \(locationName)")
+                                    }
+                                    
+                                    if let weatherElements = loc["weatherElement"] as? [[String: Any]] {
+                                        for element in weatherElements {
+                                            if let elementName = element["elementName"] as? String {
+                                                if elementName == "Wx" {
+                                                    if let time = element["time"] as? [[String: Any]], let firstTime = time.first, let parameter = firstTime["parameter"] as? [String: Any] {
+                                                        weatherName = parameter["parameterName"] as! String
+                                                        weatherValue = parameter["parameterValue"] as! String
+                                                    }
+                                                } else if elementName == "CI" {
+                                                    if let time = element["time"] as? [[String: Any]], let firstTime = time.first, let parameter = firstTime["parameter"] as? [String: Any] {
+                                                        comfortIndex = parameter["parameterName"] as! String
+                                                    }
+                                                } else if elementName == "MaxT" {
+                                                    if let time = element["time"] as? [[String: Any]], let firstTime = time.first, let parameter = firstTime["parameter"] as? [String: Any] {
+                                                        maxTemp = parameter["parameterName"] as! String
+                                                    }
+                                                } else if elementName == "MinT" {
+                                                    if let time = element["time"] as? [[String: Any]], let firstTime = time.first, let parameter = firstTime["parameter"] as? [String: Any] {
+                                                        minTemp = parameter["parameterName"] as! String
+                                                    }
+                                                } else if elementName == "PoP" {
+                                                    if let time = element["time"] as? [[String: Any]], let firstTime = time.first, let parameter = firstTime["parameter"] as? [String: Any] {
+                                                        rainfallChance = parameter["parameterName"] as! String
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        LocationInformation.append((weatherName: weatherName, weatherValue: weatherValue, comfortIndex: comfortIndex, maxTemp: maxTemp, minTemp: minTemp, rainfallChance: rainfallChance))
+                                        DispatchQueue.main.async{ [self] in
+                                            setNowLocation()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        print("Failed to parse JSON data")
+                    }
+                } catch {
+                    print("JSON Serialization Error: \(error)")
+                }
+            }
+        }
+        task.resume()
+    }
