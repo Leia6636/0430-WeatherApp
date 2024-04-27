@@ -1,5 +1,7 @@
-func forecastGet() {
-        print("forecastGet")
+var location:String = "臺北市"
+
+func weatherForecast() {
+        print("weatherForecast")
 
         let Authorization = "你的金鑰"
         var locationName = "\(location)"
@@ -27,7 +29,8 @@ func forecastGet() {
                 do {
                     if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
 
-                        //資料處理
+                        //回傳資料處理
+
                         let success = json["success"] as? String
 
                         if let result = json["result"] as? [String: Any] {
@@ -49,6 +52,9 @@ func forecastGet() {
                                     if let weatherElements = loc["weatherElement"] as? [[String: Any]] {
                                         for element in weatherElements {
                                             if let elementName = element["elementName"] as? String {
+
+                                                //解析出每個天氣現象到第一筆資料
+
                                                 if elementName == "Wx" {
                                                     if let time = element["time"] as? [[String: Any]], let firstTime = time.first, let parameter = firstTime["parameter"] as? [String: Any] {
                                                         weatherName = parameter["parameterName"] as! String
@@ -73,7 +79,11 @@ func forecastGet() {
                                                 }
                                             }
                                         }
+
+                                        //將第一筆資料加入 LocationInformation 陣列方便之後使用
                                         LocationInformation.append((weatherName: weatherName, weatherValue: weatherValue, comfortIndex: comfortIndex, maxTemp: maxTemp, minTemp: minTemp, rainfallChance: rainfallChance))
+
+                                        //確保 UI 更新在主線進行
                                         DispatchQueue.main.async{ [self] in
                                             setNowLocation()
                                         }
@@ -90,4 +100,6 @@ func forecastGet() {
             }
         }
         task.resume()
-    }
+}
+task.resume()
+}
