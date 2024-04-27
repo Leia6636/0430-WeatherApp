@@ -1,4 +1,12 @@
 var location:String = "臺北市"
+var weatherName: String = ""
+var weatherValue: String = ""
+var comfortIndex: String = ""
+var maxTemp: String = ""
+var minTemp: String = ""
+var rainfallChance: String = ""
+
+var LocationInformation = [(weatherName:String, weatherValue:String, comfortIndex:String, maxTemp:String, minTemp:String, rainfallChance:String)]()
 
 func weatherForecast() {
         print("weatherForecast")
