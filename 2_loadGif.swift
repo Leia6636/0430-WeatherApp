@@ -1,3 +1,5 @@
+//來源 https://medium.com/@Wei_Wei/播放-gif-動態圖檔-使用-swift-4-69b0c6872375
+
 import ImageIO
 
 extension UIImageView {
