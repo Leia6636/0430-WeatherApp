@@ -8,6 +8,10 @@ var rainfallChance: String = ""
 
 var LocationInformation = [(weatherName:String, weatherValue:String, comfortIndex:String, maxTemp:String, minTemp:String, rainfallChance:String)]()
 
+func setNowLocation(){
+    //設定臺北市資料顯示
+}
+
 func weatherForecast() {
     print("weatherForecast")
 
