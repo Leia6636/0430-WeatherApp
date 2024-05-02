@@ -15,10 +15,20 @@ func setNowLocation(){
 func weatherForecast() {
     print("weatherForecast")
 
-    let Authorization = "你的金鑰"
-    var locationName = "\(location)"
+    let Authorization = "這裡輸入你的金鑰"
+    var locationNameURL:String = ""
+    
+    //URL 編碼
+    if let locationName = "\(location)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed){
+        print(locationName)
+        locationNameURL = locationName
+    }else{
+        print("URL 編碼失敗")
+        locationNameURL = location
+    }
 
-    guard let url = URL(string: "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=\(Authorization)&locationName=\(locationName)") else {
+    
+    guard let url = URL(string: "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=\(Authorization)&locationName=\(locationNameURL)") else {
         print("Invalid URL")
         return
     }
